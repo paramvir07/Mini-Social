@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              500: '#6366f1', // primary
+              600: '#5457e0',
+              700: '#4f46e5',
+              800: '#4338ca',
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 25px -10px rgba(0,0,0,.15)',
+          },
+          backdropBlur: {
+            xs: '2px'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="h-full bg-gradient-to-b from-brand-50 to-white text-slate-800">
+  <!-- NAV -->
+  <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-slate-200">
+  <div class="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white font-bold">MS</span>
+      <span class="font-semibold text-slate-900">Mini Social</span>
+    </a>
+    <nav class="flex items-center gap-2">
+      <a href="/feed"
+         class="rounded-lg px-3 py-1.5 text-sm text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+        Feed
+      </a>
+
+      <a href="/logout"
+         class="rounded-lg px-3 py-1.5 text-sm text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition">
+        Logout
+      </a>
+    </nav>
+  </div>
+</header>
+
+  <main class="mx-auto max-w-5xl px-4 py-8">
+    <!-- PROFILE HERO -->
+    <section class="relative mb-8">
+      <div class="rounded-2xl bg-white/70 backdrop-blur-xs border border-slate-200 p-5 shadow-soft">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-5">
+          <img
+            src="/images/uploads/<%= user.profile %>"
+            alt="profile"
+            class="h-24 w-24 rounded-2xl object-cover ring-2 ring-brand-200"
+          />
+          <div class="flex-1">
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Hello, <%= user.name %></h1>
+            <p class="text-slate-500">@<%= user.username %></p>
+          </div>
+          <div class="hidden sm:flex">
+            <a href="/profile/settings"
+               class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm hover:border-brand-600 hover:text-brand-700 transition">
+
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M11.983 13.983a2 2 0 1 0 0-3.999 2 2 0 0 0 0 3.999Z"/><path d="M10.07 2.25h3.86l.454 1.879c.174.717.84 1.199 1.574 1.138l1.892-.154 1.93 3.343-1.438 1.312a1.375 1.375 0 0 0 0 2.044l1.438 1.312-1.93 3.343-1.892-.154a1.375 1.375 0 0 0-1.574 1.138l-.454 1.879h-3.86l-.454-1.879a1.375 1.375 0 0 0-1.574-1.138l-1.892.154-1.93-3.343 1.438-1.312c.59-.539.59-1.505 0-2.044L3.22 8.456l1.93-3.343 1.892.154c.734.061 1.4-.421 1.574-1.138l.454-1.879Z"/></svg>
+              Settings
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREATE POST -->
+    <section class="mb-10">
+      <form action="/create-post" method="post"
+            class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Create a post</label>
+        <div class="rounded-xl ring-1 ring-slate-300 focus-within:ring-2 focus-within:ring-brand-600 bg-white">
+          <textarea
+            name="postData"
+            rows="3"
+            placeholder="What's on your mind today?"
+            class="w-full rounded-xl bg-transparent px-4 py-3 outline-none placeholder-slate-400"
+          ></textarea>
+        </div>
+        <div class="mt-3 flex items-center justify-end gap-2">
+          <button type="reset"
+                  class="rounded-xl px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 transition">Clear</button>
+          <input
+            type="submit"
+            value="Post"
+            class="cursor-pointer rounded-xl bg-brand-600 px-5 py-2 text-sm font-semibold text-white hover:bg-brand-700 active:scale-95 transition"
+          />
+        </div>
+      </form>
+    </section>
+
+    <!-- POSTS -->
+    <section>
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Your posts</h2>
+      </div>
+
+      <% if (!user.postId || user.postId.length === 0) { %>
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+          No posts yet. Share something!
+        </div>
+      <% } %>
+
+      <div class="space-y-4">
+        <% user.postId.reverse().forEach(post => { 
+             const likes = (post.like || []);
+             const youLiked = likes.some(l => String(l) === String(user._id));
+             const d = post && post.date ? new Date(post.date) : null;
+        %>
+          <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft hover:shadow transition">
+            <header class="mb-3 flex items-start justify-between">
+              <div class="flex items-center gap-3">
+                <img
+                  src="/images/uploads/<%= user.profile %>"
+                  alt="avatar"
+                  class="h-10 w-10 rounded-xl object-cover ring-1 ring-slate-200"
+                />
+                <div>
+                  <div class="text-sm font-semibold">@<%= user.username %></div>
+                  <div class="text-xs text-slate-500">
+                    <% if (d) { %>
+                      <%= d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                      ·
+                      <%= d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) %>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              <a href="/edit/<%= post._id %>"
+                 class="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition">
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm14.71-9.04c.2-.2.2-.51 0-.71l-2.21-2.21a.5.5 0 0 0-.71 0l-1.83 1.83 3.75 3.75 1.99-1.66Z"/></svg>
+                Edit
+              </a>
+            </header>
+
+            <div class="prose prose-slate max-w-none">
+              <p class="whitespace-pre-wrap text-[15px] leading-6"><%= post.postData %></p>
+            </div>
+
+            <footer class="mt-4 flex items-center justify-between">
+              <div class="inline-flex items-center gap-2 text-sm text-slate-600">
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 <%= youLiked ? 'text-brand-600' : 'text-slate-400' %>" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.1 21.35 10 19.45C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41.81 4.5 2.09C12.59 4.81 14.26 4 16 4 18.5 4 20.5 6 20.5 8.5c0 3.78-3.4 6.86-8 10.95l-0.4.36Z"/>
+                </svg>
+                <span><%= likes.length %> Likes</span>
+              </div>
+
+              
+            </footer>
+          </article>
+        <% }) %>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-12 border-t border-slate-200 bg-white/70 backdrop-blur">
+    <div class="mx-auto max-w-5xl px-4 py-6 text-sm text-slate-500">
+      © <%= new Date().getFullYear() %> Mini Social
+    </div>
+  </footer>
+</body>
+</html>

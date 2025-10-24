@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Edit Post</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 600: '#5457e0', 700: '#4f46e5' }
+          },
+          boxShadow: { soft: '0 10px 25px -10px rgba(0,0,0,.15)' }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-b from-brand-50 to-white flex items-center justify-center p-4">
+  <main class="w-full max-w-lg rounded-2xl bg-white border border-slate-200 shadow-soft p-8">
+    <h1 class="text-2xl font-bold text-center mb-6">Edit Your Post</h1>
+
+    <form action="/edit-post/<%= postId %>" method="post" class="space-y-4">
+      <textarea
+        name="postData"
+        rows="4"
+        placeholder="What's on your mind today?"
+        class="w-full rounded-xl border border-slate-300 px-3 py-2 focus:ring-2 focus:ring-brand-600 outline-none resize-none"
+      ><%= postData %></textarea>
+
+      <input
+        type="submit"
+        value="Save Changes"
+        class="w-full cursor-pointer rounded-xl bg-brand-600 text-white font-semibold py-2 hover:bg-brand-700 transition"
+      />
+    </form>
+
+    <div class="mt-6 text-center">
+      <a href="/profile" class="text-sm text-brand-700 font-medium hover:underline">Back to Profile</a>
+    </div>
+  </main>
+</body>
+</html>
