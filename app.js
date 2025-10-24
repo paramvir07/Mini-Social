@@ -140,7 +140,7 @@ app.get('/like/:postId', isLoggedIn,  async(req,res)=>{
     }
     await post.save();
     await user.save();
-    res.redirect("/profile");
+    res.redirect("/feed");
 })
 
 app.get('/edit/:postId', isLoggedIn,  async(req,res)=>{
